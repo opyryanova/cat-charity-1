@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +13,7 @@ class CRUDCharityProject(CRUDBase[CharityProject, CharityProjectCreate]):
         self,
         session: AsyncSession,
         name: str,
-    ) -> CharityProject | None:
+    ) -> Optional[CharityProject]:
         result = await session.execute(
             select(CharityProject).where(CharityProject.name == name)
         )
