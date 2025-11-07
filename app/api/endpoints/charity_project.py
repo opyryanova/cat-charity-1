@@ -5,9 +5,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.validators import (
+    check_full_amount,
     check_project_exists,
-    check_project_is_open,
     check_project_has_no_investments,
+    check_project_is_open,
 )
 from app.core.constants import ErrorMessages
 from app.core.db import get_async_session
@@ -86,11 +87,7 @@ async def update_charity_project(
             )
 
     if project_in.full_amount is not None:
-        if project_in.full_amount < project.invested_amount:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=ErrorMessages.FULL_AMOUNT_LESS_THAN_INVESTED.value,
-            )
+        check_full_amount(project_in.full_amount, project)
         if project_in.full_amount == project.invested_amount:
             project.fully_invested = True
             project.close_date = datetime.utcnow()
